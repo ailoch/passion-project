@@ -6,7 +6,7 @@ from classes.object import Object
 
 class Player(Object):
     def __init__(self):
-        super().__init__((screen.get_width()/2, screen.get_height()/2, 0), (80, 80), (255, 0, 0))
+        super().__init__((screen.get_width()/2, screen.get_height()/2, 0), (100, 100), (255, 0, 0))
 
     # handle player physics
     def tick(self, events, dt):
