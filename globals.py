@@ -1,4 +1,5 @@
 import pygame
+from classes.camera import Camera
 
 # pygame setup
 pygame.init()
@@ -7,3 +8,6 @@ font = pygame.font.SysFont("Arial", 18)
 
 # platform list
 currentPlatforms = []
+
+# create the camera
+camera = Camera()

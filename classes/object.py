@@ -9,10 +9,11 @@ class Object:
         self.rot = pose[2]
         self.vel = pygame.Vector2(0, 0)
         self.color = color
-        self.width = 3
+        self.width = 3 # default width for objects
 
     def _updatePos(self, dt):
         self.pos += self.vel*dt
 
     def render(self):
-        pygame.draw.polygon(screen, self.color, getRectCorners(self.pos, self.size, self.rot), self.width)
+        corners = getRectCorners(self.pos, self.size, self.rot)
+        pygame.draw.polygon(screen, self.color, camera.translate(corners), int(self.width*camera.zoom))

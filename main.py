@@ -21,14 +21,11 @@ while running:
     # poll for events
     events = []
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        if event.type == pygame.QUIT: # if user closed the window
             running = False
         elif event.type == pygame.KEYDOWN:
             if event.key==pygame.K_w or event.key==pygame.K_UP:
                 events.append(Event.JUMP)
-
-    # fill the screen with a color to wipe away anything from last frame
-    screen.fill("black")
 
     # handle game inputs
     keys = pygame.key.get_pressed()
@@ -38,10 +35,17 @@ while running:
         events.append(Event.MOVEDOWN)
     if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
         events.append(Event.MOVERIGHT)
-    
+
+    # clear the screen so a new frame can be drawn
+    screen.fill("black")
+
+    # update the camera
+    camera.follow(player.pos, .8, dt)
+
     # update all entities
     player.tick(events, dt)
 
+    # render entities
     for plat in currentPlatforms:
         plat.render()
     player.render()
@@ -54,7 +58,7 @@ while running:
     # refresh the screen
     pygame.display.flip()
 
-    # limits FPS to 60
+    # delay so the framerate remains at 60
     dt = clock.tick(60) / 1000
 
 pygame.quit()

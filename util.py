@@ -46,3 +46,4 @@ def getTopY(x, rectPos, rectSize, rectRot):
 
 def drawText(text: str, pos: pygame.Vector2, font: pygame.font.Font):
     screen.blit(font.render(text, True, (255, 255, 255)), pos)
+    
