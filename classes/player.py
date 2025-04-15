@@ -4,35 +4,11 @@ from classes.object import Object
 
 class Player(Object):
     def __init__(self):
-        super().__init__((screen.get_width()/2, screen.get_height()/2, 0), (100, 100), (255, 0, 0))
+        super().__init__((0, 0, 0), (100, 100), (255, 0, 0))
         self.onGround = True
-        self.standingPlat = None
 
     # handle player physics
     def tick(self, events, dt):
-        # handle platform interactions
-        self.onGround = False
-        standingPlats = []
-        bottom = self.pos + (0, self.size.y/2)
-        for plat in currentPlatforms:
-            if pointInBox(bottom, plat.pos, plat.size, plat.rot):
-                standingPlats.append((getTopY(bottom.x, plat.pos, plat.size, plat.rot), plat))
-
-        if standingPlats == []:
-            self.onGround = False
-        else:
-            self.onGround = True
-            minY = standingPlats[0][0]
-            self.standingPlat = standingPlats[0]
-            for i in range(0, len(standingPlats)):
-                if standingPlats[i][0] < minY:
-                    minY = standingPlats[i][0]
-                    self.standingPlat = standingPlats[i]
-
-        # move out of floors
-        if (self.onGround):
-            self.pos.y = self.standingPlat[0] - self.size.y/2
-
         # gravity
         if (self.onGround):
             self.vel.y = 0
@@ -54,3 +30,37 @@ class Player(Object):
             self.vel.x += 5000*dt
 
         self._updatePos(dt)
+
+        self.onGround = False
+        # handle platform interactions
+        collidingPlats = getCollidingPlats(self.pos, self.size, self.rot)
+        playerCorners = getRectCorners(self.pos, self.size, self.rot)
+        for plat in collidingPlats:
+            platCorners = getRectCorners(plat.pos, plat.size, plat.rot)
+            axes = []
+            for corners in [playerCorners, platCorners]:
+                for i in range(4):
+                    edge = corners[i] - corners[(i+1) % 4]
+                    normal = edge.normalize().rotate(90)
+                    axes.append(normal)
+            
+            mtv = getMtv(playerCorners, platCorners, axes)
+            if mtv and mtv.magnitude() > .01:
+                # push player out
+                self.pos -= mtv
+                # cancel velocity
+                mtv.normalize_ip()
+                if mtv.y < -.5:
+                    # hitting ceiling
+                    if self.vel.y < 0:
+                        self.vel.y = 0
+                elif mtv.y > .5:
+                    # hitting floor
+                    if self.vel.y > 0:
+                        self.vel.y = 0
+                elif abs(mtv.x) > .5:
+                    # hitting wall
+                    if self.vel.x*mtv.x < 0:
+                        self.vel.x = 0
+                if mtv.y > .7:
+                    self.onGround = True

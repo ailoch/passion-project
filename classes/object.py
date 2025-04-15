@@ -15,5 +15,5 @@ class Object:
         self.pos += self.vel*dt
 
     def render(self):
-        corners = getRectCorners(self.pos, self.size, self.rot)
+        corners = getRectCorners(self.pos, self.size, self.rot, int(self.width*camera.zoom))
         pygame.draw.polygon(screen, self.color, camera.translate(corners), int(self.width*camera.zoom))
