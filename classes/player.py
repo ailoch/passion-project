@@ -4,8 +4,11 @@ from classes.object import Object
 
 class Player(Object):
     def __init__(self):
-        super().__init__((0, 0, 0), (100, 100), (255, 0, 0))
+        super().__init__((0, 0, 0), (100, 100), (144, 0, 255))
+        self.prevPos = pygame.Vector2(0, 0)
         self.onGround = True
+        self.canJump = True
+        self.checkpoint = 0
 
     # handle player physics
     def tick(self, events, dt):
@@ -19,8 +22,10 @@ class Player(Object):
         self.vel.x -= self.vel.x*dt*12
 
         # player movement/jumping
-        if Event.JUMP in events:
+        if Event.JUMP in events and self.canJump:
             self.vel.y = -800
+            if not self.onGround:
+                self.canJump = False
         if Event.MOVELEFT in events:
             self.vel.x -= 5000*dt
         if Event.MOVEDOWN in events:
@@ -58,9 +63,18 @@ class Player(Object):
                     # hitting floor
                     if self.vel.y > 0:
                         self.vel.y = 0
+                    self.onGround = True
+                    self.canJump = True
+                    self.pos.y += 1
                 elif abs(mtv.x) > .5:
                     # hitting wall
                     if self.vel.x*mtv.x < 0:
                         self.vel.x = 0
-                if mtv.y > .7:
-                    self.onGround = True
+
+        # check for death
+        if pointCrossedLine(self.pos, self.prevPos, respawnPoints[self.checkpoint][1], respawnPoints[self.checkpoint][2]):
+            # respawn
+            self.pos = pygame.Vector2(respawnPoints[self.checkpoint][0])
+            self.vel = pygame.Vector2(0, 0)
+
+        self.prevPos = pygame.Vector2(self.pos)

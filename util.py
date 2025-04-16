@@ -8,6 +8,29 @@ class Event(Enum):
     MOVEDOWN = 2
     MOVERIGHT = 3
 
+# get the sign of a number
+def sgn(x):
+    if x < 0:
+        return -1
+    elif x > 0:
+        return 1
+    return 0
+
+def signedDist(pos, lPos, lVector):
+    return lVector.x * (lPos.y-pos.y) - lVector.y * (lPos.x-pos.x)
+
+def pointCrossedLine(curr, prev, l1, l2):
+    lVector = pygame.Vector2(l2-l1).normalize()
+    currSide = sgn(signedDist(curr, l1, lVector))
+    prevSide = sgn(signedDist(prev, l1, lVector))
+    if currSide == prevSide: # if point did not cross line
+        return False
+    # check if point crossed between endpoints of line
+    lVector.rotate_ip(90)
+    side1 = sgn(signedDist(prev, l1, lVector))
+    side2 = sgn(signedDist(prev, l2, lVector))
+    return side1 != side2
+
 def getRectCorners(pos, size, rot, width=0):
     # get corner offsets from center pos
     upOffset = pygame.Vector2(0, size.y/2 - width)
@@ -35,15 +58,13 @@ def projectPoly(points, axis):
 def overlapOnAxis(poly1, poly2, axis):
     min1, max1 = projectPoly(poly1, axis)
     min2, max2 = projectPoly(poly2, axis)
-    return max1>= min2 and max2>=min1
+    return max1>=min2 and max2>=min1
 
 def collideRects(pos1, size1, rot1, pos2, size2, rot2):
     rect1 = getRectCorners(pos1, size1, rot1)
     rect2 = getRectCorners(pos2, size2, rot2)
 
-    #edges = rect1+rect2
     axes = []
-
     for i in range(4):
         edge1 = rect1[i] - rect1[(i+1) % 4]
         edge2 = rect2[i] - rect2[(i+1) % 4]
@@ -70,7 +91,7 @@ def getMtv(poly1, poly2, axes):
         min1, max1 = projectPoly(poly1, axis)
         min2, max2 = projectPoly(poly2, axis)
 
-        if max1 < min2 or max2 < min1:  # no collision
+        if max1<min2 or max2<min1:  # no collision
             return None
         
         overlap = min(max1, max2)-max(min1, min2)
