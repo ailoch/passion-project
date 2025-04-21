@@ -6,14 +6,17 @@ class Camera:
         self.pos = pygame.Vector2(0, 0)
         self.zoom = 1
 
-    def translate(self, points):
-        windowCenter = pygame.Vector2(globals.screen.get_width()/2, globals.screen.get_height()/2)
+    def translatePoints(self, points):
         translatedPoints = []
         for point in points:
-            translatedPoint = point-self.pos
-            translatedPoint *= self.zoom
-            translatedPoints.append(translatedPoint + windowCenter)
+            translatedPoints.append(self.translatePoint(point))
         return translatedPoints
+
+    def translatePoint(self, point):
+        windowCenter = pygame.Vector2(globals.screen.get_width()/2, globals.screen.get_height()/2)
+        translatedPoint = point-self.pos
+        translatedPoint *= self.zoom
+        return translatedPoint + windowCenter
 
     def follow(self, pos, zoom, dt):
         error = self.pos-pos

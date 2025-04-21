@@ -2,7 +2,11 @@ import pygame
 from classes.camera import Camera
 
 # debug mode
-debug = False
+Debug = {"allowFlight": True,
+         "clickForPos": True,
+         "showPlayerFeet": False,
+         "showRespawnPoints": True
+         }
 
 # pygame setup
 pygame.init()

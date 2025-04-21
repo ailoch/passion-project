@@ -4,9 +4,10 @@ from globals import *
 
 class Event(Enum):
     JUMP = 0
-    MOVELEFT = 1
-    MOVEDOWN = 2
-    MOVERIGHT = 3
+    MOVEUP = 1
+    MOVELEFT = 2
+    MOVEDOWN = 3
+    MOVERIGHT = 4
 
 # get the sign of a number
 def sgn(x):

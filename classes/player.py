@@ -13,6 +13,17 @@ class Player(Object):
 
     # handle player physics
     def tick(self, events, dt):
+        if Debug["allowFlight"]:
+            if Event.MOVEUP in events:
+                self.pos.y -= 800*dt
+            if Event.MOVELEFT in events:
+                self.pos.x -= 800*dt
+            if Event.MOVEDOWN in events:
+                self.pos.y += 800*dt
+            if Event.MOVERIGHT in events:
+                self.pos.x += 800*dt
+            return
+
         # apply gravity
         if (self.standingPlats == []):
             self.vel.y += 1900*dt
@@ -72,6 +83,9 @@ class Player(Object):
         # check if on ground
         feetPos = pygame.Vector2(0, self.size.y/2+2).rotate(self.rot)
         feetPos += self.pos
+        if Debug["showPlayerFeet"]:
+            feetRect = Object((feetPos.x, feetPos.y, self.rot), pygame.Vector2(self.size.x-10, .1), "#ffb0ff")
+            feetRect.render()
         self.standingPlats = getCollidingPlats(feetPos, pygame.Vector2(self.size.x-10, .1), self.rot)
         
         if self.standingPlats != []:

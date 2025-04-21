@@ -34,9 +34,18 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key==pygame.K_w or event.key==pygame.K_UP or event.key==pygame.K_SPACE:
                 events.append(Event.JUMP)
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if Debug["clickForPos"]:
+                clickPos = event.pos
+                clickPos -= pygame.Vector2(screen.get_width()/2, screen.get_height()/2)
+                clickPos /= camera.zoom
+                clickPos += camera.pos
+                print(str(clickPos.x) + ", " + str(clickPos.y))
 
     # handle game inputs
     keys = pygame.key.get_pressed()
+    if keys[pygame.K_w] or keys[pygame.K_UP] or keys[pygame.K_SPACE]:
+        events.append(Event.MOVEUP)
     if keys[pygame.K_a] or keys[pygame.K_LEFT]:
         events.append(Event.MOVELEFT)
     if keys[pygame.K_s] or keys[pygame.K_DOWN]:
@@ -57,6 +66,13 @@ while running:
     for plat in currentPlatforms:
         plat.render()
     player.render()
+
+    # show checkpoints
+    if Debug["showRespawnPoints"]:
+        for point in respawnPoints:
+            pygame.draw.circle(screen, "#ffd0d0", camera.translatePoint(point[0]), 7*camera.zoom)
+            pygame.draw.line(screen, "#ffd0d0", camera.translatePoint(point[1]), camera.translatePoint(point[2]), int(4*camera.zoom))
+
     # display framerate
     if dt == 0:
         drawText("1000", (3, 3), font)
