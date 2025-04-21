@@ -91,7 +91,7 @@ def getMtv(poly1, poly2, axes):
         min1, max1 = projectPoly(poly1, axis)
         min2, max2 = projectPoly(poly2, axis)
 
-        if max1<min2 or max2<min1:  # no collision
+        if (max1<min2 or max2<min1): # no collision
             return None
         
         overlap = min(max1, max2)-max(min1, min2)
@@ -105,6 +105,21 @@ def getMtv(poly1, poly2, axes):
     
     return smallestAxis * smallestOverlap
 
+def getTopY(x, rectPos, rectSize, rectRot):
+    corners = getRectCorners(rectPos, rectSize,rectRot)
+    edges = [(corners[0], corners[1]),
+             (corners[1], corners[2]),
+             (corners[2], corners[3]),
+             (corners[3], corners[0])]
+    
+    yCandidates = []
+    for a, b in edges:
+        if (a.x<=x<=b.x) or (b.x<=x<=a.x):
+            t = (x-a.x) / (b.x-a.x) if b.x!=a.x else 0
+            y = a.y + t * (b.y-a.y)
+            yCandidates.append(y)
+    
+    return min(yCandidates) if yCandidates else None
+
 def drawText(text, pos, font):
     screen.blit(font.render(text, True, (255, 255, 255)), pos)
-    

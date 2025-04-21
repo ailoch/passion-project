@@ -16,7 +16,8 @@ worldPlatforms = (Platform((-240, 90, 0), (600, 50), PlatformType.GROUND),
                   Platform((303, 3, -20), (500, 50), PlatformType.GROUND),
                   Platform((0, 350, 2), (1300, 50), PlatformType.GROUND),
                   Platform((1000, 150, 0), (250, 50), PlatformType.GROUND),
-                  Platform((-750, 0, 0), (50, 1000), PlatformType.GROUND))
+                  Platform((-750, 0, 0), (50, 1000), PlatformType.GROUND),
+                  Platform((-550, -200, 5), (150, 50), PlatformType.GROUND))
 for plat in worldPlatforms:
     currentPlatforms.append(plat)
 
