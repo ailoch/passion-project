@@ -11,6 +11,9 @@ dt = 0
 
 player = Player()
 
+mousePos = pygame.Vector2(0, 0)
+prevMousePos = pygame.Vector2(0, 0)
+
 # add platforms to world
 worldPlatforms = (Platform((-240, 90, 0), (600, 50), PlatformType.GROUND),
                   Platform((303, 3, -20), (500, 50), PlatformType.GROUND),
@@ -39,13 +42,19 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key==pygame.K_w or event.key==pygame.K_UP or event.key==pygame.K_SPACE:
                 events.append(Event.JUMP)
+            if Debug["levelEditor"]:
+                if event.key == pygame.K_1:
+                    currentPlatforms.append(Platform((player.pos.x, player.pos.y, 0), (50, 50), PlatformType.GROUND))
+                if event.key == pygame.K_2:
+                    currentPlatforms.append(Platform((player.pos.x, player.pos.y, 0), (50, 50), PlatformType.LAVA))
+                if event.key == pygame.K_3:
+                    currentPlatforms.append(Platform((player.pos.x, player.pos.y, 0), (50, 50), PlatformType.ICE))
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if Debug["clickForPos"]:
-                clickPos = event.pos
-                clickPos -= pygame.Vector2(screen.get_width()/2, screen.get_height()/2)
-                clickPos /= camera.zoom
-                clickPos += camera.pos
+                clickPos = camera.reverseTranslate(event.pos)
                 print(str(clickPos.x) + ", " + str(clickPos.y))
+        elif event.type == pygame.MOUSEMOTION:
+            mousePos = pygame.Vector2(event.pos)        
 
     # handle game inputs
     keys = pygame.key.get_pressed()
@@ -57,6 +66,16 @@ while running:
         events.append(Event.MOVEDOWN)
     if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
         events.append(Event.MOVERIGHT)
+
+    if Debug["levelEditor"] and pygame.mouse.get_pressed()[0]:
+        selectedPlat = getCollidingPlats(camera.reverseTranslate(mousePos), pygame.Vector2(1, 1), 0)
+        if selectedPlat:
+            selectedPlat = selectedPlat[-1]
+            mouseDelta = camera.reverseTranslate(mousePos)-camera.reverseTranslate(prevMousePos)
+            if keys[pygame.K_LSHIFT]:
+                selectedPlat.size += mouseDelta*2
+            else:
+                selectedPlat.pos += mouseDelta
 
     # clear the screen so a new frame can be drawn
     screen.fill("black")
@@ -92,6 +111,7 @@ while running:
 
     # refresh the screen
     pygame.display.flip()
+    prevMousePos = mousePos
 
     # delay so the framerate remains at 60
     dt = clock.tick(60)/1000

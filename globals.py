@@ -4,6 +4,7 @@ from classes.camera import Camera
 # debug mode
 Debug = {"allowFlight": False,
          "clickForPos": False,
+         "levelEditor": False,
          "showPlayerFeet": False,
          "showRespawnPoints": False
          }

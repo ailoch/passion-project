@@ -18,6 +18,11 @@ class Camera:
         translatedPoint *= self.zoom
         return translatedPoint + windowCenter
 
+    def reverseTranslate(self, point):
+        translatedPoint = point - pygame.Vector2(globals.screen.get_width()/2, globals.screen.get_height()/2)
+        translatedPoint /= self.zoom
+        return translatedPoint+self.pos
+
     def follow(self, pos, zoom, dt):
         error = self.pos-pos
         error -= error*dt*12

@@ -113,10 +113,10 @@ class Player(Object):
             self.accel = float("inf")
             topSpeed = float("inf")
             for plat in self.standingPlats:
-                if plat.info["friction"]*plat.info["accel"] < topSpeed:
+                if plat.info["accel"]/plat.info["friction"] < topSpeed:
                     self.friction = plat.info["friction"]
                     self.accel = plat.info["accel"]
-                    topSpeed = self.friction*self.accel
+                    topSpeed = self.accel/self.friction
 
         # snap player to platforms
         if self.vel.y > 0:
