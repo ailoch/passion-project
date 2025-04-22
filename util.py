@@ -94,16 +94,16 @@ def getMtv(poly1, poly2, axes):
 
         if (max1<min2 or max2<min1): # no collision
             return None
-        
+
         overlap = min(max1, max2)-max(min1, min2)
         if overlap < smallestOverlap:
             smallestOverlap = overlap
             smallestAxis = axis
-    
+
     dir = poly2[0]-poly1[0]
     if dir.dot(smallestAxis) < 0:
         smallestAxis = -smallestAxis
-    
+
     return smallestAxis * smallestOverlap
 
 def getTopY(x, rectPos, rectSize, rectRot):
@@ -112,14 +112,14 @@ def getTopY(x, rectPos, rectSize, rectRot):
              (corners[1], corners[2]),
              (corners[2], corners[3]),
              (corners[3], corners[0])]
-    
+
     yCandidates = []
     for a, b in edges:
         if (a.x<=x<=b.x) or (b.x<=x<=a.x):
             t = (x-a.x) / (b.x-a.x) if b.x!=a.x else 0
             y = a.y + t * (b.y-a.y)
             yCandidates.append(y)
-    
+
     return min(yCandidates) if yCandidates else None
 
 def drawText(text, pos, font):
