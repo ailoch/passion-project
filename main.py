@@ -49,12 +49,14 @@ while running:
                     currentPlatforms.append(Platform((player.pos.x, player.pos.y, 0), (50, 50), PlatformType.LAVA))
                 if event.key == pygame.K_3:
                     currentPlatforms.append(Platform((player.pos.x, player.pos.y, 0), (50, 50), PlatformType.ICE))
+            if Debug["allowFlight"] and event.key==pygame.K_f:
+                events.append(Event.TOGGLEFLIGHT)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if Debug["clickForPos"]:
                 clickPos = camera.reverseTranslate(event.pos)
                 print(str(clickPos.x) + ", " + str(clickPos.y))
         elif event.type == pygame.MOUSEMOTION:
-            mousePos = pygame.Vector2(event.pos)        
+            mousePos = camera.reverseTranslate(event.pos)        
 
     # handle game inputs
     keys = pygame.key.get_pressed()
@@ -67,15 +69,32 @@ while running:
     if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
         events.append(Event.MOVERIGHT)
 
-    if Debug["levelEditor"] and pygame.mouse.get_pressed()[0]:
-        selectedPlat = getCollidingPlats(camera.reverseTranslate(mousePos), pygame.Vector2(1, 1), 0)
+    if Debug["levelEditor"]:
+        selectedPlat = getCollidingPlats(mousePos, pygame.Vector2(1, 1), 0)
         if selectedPlat:
             selectedPlat = selectedPlat[-1]
-            mouseDelta = camera.reverseTranslate(mousePos)-camera.reverseTranslate(prevMousePos)
-            if keys[pygame.K_LSHIFT]:
-                selectedPlat.size += mouseDelta*2
+            if keys[pygame.K_BACKSPACE]:
+                removeItemsWithValue(currentPlatforms, selectedPlat)
             else:
-                selectedPlat.pos += mouseDelta
+                if keys[pygame.K_q]:
+                    selectedPlat.rot -= 200*dt
+                if keys[pygame.K_e]:
+                    selectedPlat.rot += 200*dt
+                if pygame.mouse.get_pressed()[0]:
+                    mouseDelta = mousePos-prevMousePos
+                    if keys[pygame.K_LSHIFT]:
+                        mouseDelta.rotate_ip(selectedPlat.rot)
+                        if sgn(mousePos.x-selectedPlat.pos.x) == sgn(mouseDelta.x):
+                            mouseDelta.x = abs(mouseDelta.x)
+                        else:
+                            mouseDelta.x = -abs(mouseDelta.x)
+                        if sgn(mousePos.y-selectedPlat.pos.y) == sgn(mouseDelta.y):
+                            mouseDelta.y = abs(mouseDelta.y)
+                        else:
+                            mouseDelta.y = -abs(mouseDelta.y)
+                        selectedPlat.size += mouseDelta*2
+                    else:
+                        selectedPlat.pos += mouseDelta
 
     # clear the screen so a new frame can be drawn
     screen.fill("black")

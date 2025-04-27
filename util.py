@@ -8,6 +8,7 @@ class Event(Enum):
     MOVELEFT = 2
     MOVEDOWN = 3
     MOVERIGHT = 4
+    TOGGLEFLIGHT = 5
 
 # get the sign of a number
 def sgn(x):
@@ -19,6 +20,14 @@ def sgn(x):
 
 def signedDist(pos, lPos, lVector):
     return lVector.x * (lPos.y-pos.y) - lVector.y * (lPos.x-pos.x)
+
+def removeItemsWithValue(lst, value):
+    writeIndex = 0
+    for readIndex in range(len(lst)):
+        if lst[readIndex] != value:
+            lst[writeIndex] = lst[readIndex]
+            writeIndex += 1
+    del lst[writeIndex:]
 
 def pointCrossedLine(curr, prev, l1, l2):
     lVector = pygame.Vector2(l2-l1).normalize()
@@ -69,8 +78,10 @@ def collideRects(pos1, size1, rot1, pos2, size2, rot2):
     for i in range(4):
         edge1 = rect1[i] - rect1[(i+1) % 4]
         edge2 = rect2[i] - rect2[(i+1) % 4]
-        axes.append(edge1.normalize().rotate(90))
-        axes.append(edge2.normalize().rotate(90))
+        if edge1.length() != 0:
+            axes.append(edge1.normalize().rotate(90))
+        if edge2.length() != 0:
+            axes.append(edge2.normalize().rotate(90))
 
     for axis in axes:
         if not overlapOnAxis(rect1, rect2, axis):
@@ -105,22 +116,6 @@ def getMtv(poly1, poly2, axes):
         smallestAxis = -smallestAxis
 
     return smallestAxis * smallestOverlap
-
-def getTopY(x, rectPos, rectSize, rectRot):
-    corners = getRectCorners(rectPos, rectSize,rectRot)
-    edges = [(corners[0], corners[1]),
-             (corners[1], corners[2]),
-             (corners[2], corners[3]),
-             (corners[3], corners[0])]
-
-    yCandidates = []
-    for a, b in edges:
-        if (a.x<=x<=b.x) or (b.x<=x<=a.x):
-            t = (x-a.x) / (b.x-a.x) if b.x!=a.x else 0
-            y = a.y + t * (b.y-a.y)
-            yCandidates.append(y)
-
-    return min(yCandidates) if yCandidates else None
 
 def drawText(text, pos, font):
     screen.blit(font.render(text, True, (255, 255, 255)), pos)

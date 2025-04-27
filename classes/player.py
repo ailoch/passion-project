@@ -13,6 +13,7 @@ class Player(Object):
         self.checkpoint = 0
         self.friction = 12
         self.accel = 5000
+        self.isFlying = False
 
     def respawn(self):
         self.pos = pygame.Vector2(respawnPoints[self.checkpoint][0])
@@ -20,7 +21,10 @@ class Player(Object):
 
     # handle player physics
     def tick(self, events, dt):
-        if Debug["allowFlight"]:
+        if Event.TOGGLEFLIGHT in events:
+            self.isFlying = not self.isFlying
+            self.vel = pygame.Vector2(0, 0)
+        if self.isFlying:
             if Event.MOVEUP in events:
                 self.pos.y -= 800*dt
             if Event.MOVELEFT in events:
@@ -140,6 +144,8 @@ class Player(Object):
                 self.pos.y += 2
 
         # check for death
+        if self.pos.y > 1000:
+            self.respawn()
         for i in range(0, self.checkpoint+1):
             if pointCrossedLine(self.pos, self.prevPos, respawnPoints[i][1], respawnPoints[i][2]):
                 self.respawn()
