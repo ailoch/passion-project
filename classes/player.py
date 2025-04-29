@@ -61,14 +61,12 @@ class Player(Object):
 
         # handle platform interactions
         collidingPlats = getCollidingPlats(self.pos, self.size, self.rot)
+        lavaPlats = []
         for plat in collidingPlats:
-            # respawn if touching lava
+            # ignore if platfrom is lava
             if plat.type==PlatformType.LAVA:
-                if collideRects(self.pos, self.size-(0, 10), self.rot, plat.pos, plat.size, plat.rot):
-                    self.respawn()
-                    return
-                else:
-                    continue
+                lavaPlats.append(plat)
+                continue
 
             playerCorners = getRectCorners(self.pos, self.size, self.rot)
             platCorners = getRectCorners(plat.pos, plat.size, plat.rot)
@@ -81,23 +79,30 @@ class Player(Object):
 
             mtv = getMtv(playerCorners, platCorners, axes)
             if mtv and mtv.magnitude() > .01:
+                normalMtv = mtv.normalize()
                 # push player out
-                self.pos -= mtv
+                if abs(normalMtv.x) > .35:
+                    self.pos.x -= mtv.x
+                self.pos.y -= mtv.y
                 # cancel velocity
-                mtv.normalize_ip()
-                if mtv.y < -.5:
+                if normalMtv.y < -.5:
                     # hitting ceiling
                     if self.vel.y < 0:
                         self.vel.y = 0
-                elif mtv.y > .5:
+                elif normalMtv.y > .5:
                     # hitting floor
                     if self.vel.y > 0:
                         self.vel.y = 0
                     self.pos.y += 1
-                elif abs(mtv.x) > .5:
+                elif abs(normalMtv.x) > .5:
                     # hitting wall
                     if self.vel.x*mtv.x < 0:
                         self.vel.x = 0
+
+        for plat in lavaPlats:
+            if collideRects(self.pos, self.size-(0, 10), self.rot, plat.pos, plat.size, plat.rot):
+                self.respawn()
+                break
 
         # check if on ground
         feetPos = pygame.Vector2(0, self.size.y/2+2).rotate(self.rot)
