@@ -13,13 +13,13 @@ class Camera:
         return translatedPoints
 
     def translatePoint(self, point):
-        windowCenter = pygame.Vector2(globals.screen.get_width()/2, globals.screen.get_height()/2)
+        windowCenter = globals.screenSize/2
         translatedPoint = point-self.pos
         translatedPoint *= self.zoom
         return translatedPoint + windowCenter
 
     def reverseTranslate(self, point):
-        translatedPoint = point - pygame.Vector2(globals.screen.get_width()/2, globals.screen.get_height()/2)
+        translatedPoint = point - globals.screenSize/2
         translatedPoint /= self.zoom
         return translatedPoint+self.pos
 

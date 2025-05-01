@@ -41,6 +41,9 @@ async def main():
             if event.type == pygame.QUIT: # if user closed the window
                 pygame.quit()
                 sys.exit()
+            elif event.type == pygame.VIDEORESIZE:
+                screenSize.x, screenSize.y = event.size
+                pygame.display.set_mode(event.size, pygame.RESIZABLE)
             elif event.type == pygame.KEYDOWN:
                 if event.key==pygame.K_w or event.key==pygame.K_UP or event.key==pygame.K_SPACE:
                     events.append(Event.JUMP)
